@@ -1,0 +1,55 @@
+acceptCommunityEditionLicense: true
+
+vvp:
+
+  ### Configure VVP to use a local SQLite database
+  persistence:
+    type: local
+
+  ### Configure Minio for Universal Blob Storage
+  blobStorage:
+    baseUri: s3://vvp
+    s3:
+      endpoint: http://minio.vvp.svc:9000
+
+  ### Configure some global defaults for Deployments in this instance of Ververica Platform
+  globalDeploymentDefaults: |
+    spec:
+      state: RUNNING
+      template:
+        spec:
+          resources:
+            jobmanager:
+              cpu: 0.5
+              memory: 1G
+            taskmanager:
+              cpu: 0.5
+              memory: 1G
+          flinkConfiguration:
+            state.backend: filesystem
+            taskmanager.memory.managed.fraction: 0.0 # no managed memory needed for filesystem statebackend
+            high-availability: vvp-kubernetes
+            metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+            execution.checkpointing.interval: 10s
+            execution.checkpointing.externalized-checkpoint-retention: RETAIN_ON_CANCELLATION
+
+  sqlService:
+    pool:
+      coreSize: 1
+      maxSize: 1
+
+blobStorageCredentials:
+  s3:
+    accessKeyId: admin
+    secretAccessKey: password
+
+rbac:
+  additionalNamespaces:
+    - vvp-jobs
+
+gateway:
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      memory: 1Gi
