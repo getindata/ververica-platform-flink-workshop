@@ -1,0 +1,24 @@
+metadata:
+  labels: {}
+  name: flink-sql-demo
+spec:
+  deploymentTargetName: vvp-jobs
+  flinkConfiguration: {}
+  flinkImageRegistry: registry.ververica.com/v2.6
+  flinkImageRepository: flink
+  flinkImageTag: 1.14.0-stream1-scala_2.12-java8
+  flinkVersion: '1.14'
+  logging:
+    log4j2ConfigurationTemplate: null
+    log4jLoggers:
+      '': INFO
+    loggingProfile: default
+  numberOfTaskManagers: 1
+  resources:
+    jobmanager:
+      cpu: 1
+      memory: 2G
+    taskmanager:
+      cpu: 1
+      memory: 2G
+  state: RUNNING
