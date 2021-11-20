@@ -10,14 +10,6 @@ This repo is designed to be used as the base for demo for any workshop with Verv
   - [ ] Easily customizable templates
   - [ ] Examples of jobs upgrade
 
-- [] Flink SQL
-  - [ ] Datasources for Flink SQL
-  - [ ] Flink SQL examples
-
-- [] Monitoring
-  - [ ] Prometheus with Grafana
-  - [ ] Loki with Promtail to scrap logs
-
 - [] Scripts
   - [ ] Setup Minikube locally
   - [ ] Setup all components
@@ -158,6 +150,44 @@ curl localhost:8080/api/v1/namespaces/default/deployment-targets \
         --data-binary @deployments/top-speed/deployment.yaml
 ```
 
+### Monitoring stack
+
+1. Get Helm chart from Grafana to set up Grafana, Prometheus, Grafana, Loki; and then create a namespace.
+
+```shell script
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+kubectl create ns monitoring
+```
+
+2. Install the Helm chart
+
+```shell script
+helm -n monitoring upgrade --install loki grafana/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false
+```
+
+3. Check if all pods are up and running.
+
+```shell script
+kubectl -n monitoring get po
+```
+
+4. Go to Grafana and get the password to panel
+
+```shell script
+kubectl get secret -n monitoring loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+5. Forward the port and access Grafana.
+
+```shell script
+kubectl port-forward -n monitoring service/loki-grafana 3000:80
+```
+
+6. Login to 127.0.0.1:3000 with username: admin and copied password.
+
 ## Credits
 
 [Ververica Platform](https://www.ververica.com/platform)
+[Flink SQL Cookbook](https://github.com/ververica/flink-sql-cookbook)
+[wuchong - Flink SQL Demo](https://github.com/wuchong/flink-sql-demo)
